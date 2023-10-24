@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 const server = http.createServer((req, res) => {
-  if (req.method === 'GET' && req.url === '/home.html') {
+  if (req.method === 'GET' && req.url === '/') {
     // 요청이 GET이며 URL이 '/home.html'일 때,
     const filePath = path.join(__dirname, 'home.html');
 
