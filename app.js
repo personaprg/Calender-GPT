@@ -22,3 +22,8 @@ const server = http.createServer((req, res) => {
     res.end('Not Found');
   }
 });
+
+const port = 8080; // 사용할 포트 번호를 선택하세요.
+server.listen(port, () => {
+  console.log(`서버가 ${port}번 포트에서 실행 중입니다.`);
+});
