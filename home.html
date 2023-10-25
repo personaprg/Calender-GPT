@@ -6,12 +6,11 @@
     <title>동적 캘린더</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: white; /* 기본 배경색 */
-            color: black; /* 기본 글자색 */
+            font-family: 돋움, sans-serif;
+            background-color: beige;
+            color: black;
         }
 
-        /* 다크 모드 토글 버튼 스타일 */
         #darkModeToggle {
             position: absolute;
             top: 10px;
@@ -23,6 +22,7 @@
             border-collapse: collapse;
             width: 100%;
             margin-top: 20px;
+            border-radius: 10px;
         }
 
         table, th, td {
@@ -30,21 +30,16 @@
         }
 
         th, td {
-            padding: 10px;
+            padding: 15px;
             text-align: center;
-            background-color: white; /* 일 수 표시 칸의 배경색을 흰색으로 변경 */
+            background-color: #303030;
+            color: white;
+            font-size: 20px; /* 폰트 크기 크게 조정 */
         }
 
-        /* 일요일 스타일 */
-        th:first-child {
-            background-color: beige; /* 배경색 변경 */
-            color: #E74C3C; /* 일요일 글자색을 밝은 빨간색으로 변경 */
-        }
-
-        /* 토요일 스타일 */
-        th:last-child {
-            background-color: beige; /* 배경색 변경 */
-            color: #3498DB; /* 토요일 글자색을 밝은 파란색으로 변경 */
+        th {
+            font-weight: bold;
+            font-size: 22px; /* 폰트 크기 크게 조정 */
         }
 
         #imageContainer {
@@ -55,35 +50,64 @@
             max-width: 100%;
             max-height: 60vh;
         }
+
+        .today {
+            background-color: lightcoral;
+        }
+
+        .calendar {
+            display: block;
+            text-align: center; /* 캘린더 전체 가운데 정렬 */
+        }
+
+        /* 스타일 변경 시작 */
+        td {
+            background-color: white; /* 흰색 배경 */
+            border-radius: 10px; /* 테두리 둥근 모양 적용 */
+            cursor: pointer;
+            color: black; /* 글자색 검은색으로 변경 */
+        }
+
+        .saturday {
+            color: blue; /* 토요일 글자색 파란색으로 변경 (그대로 유지) */
+        }
+
+        .sunday {
+            color: red; /* 일요일 글자색 붉은색으로 변경 (그대로 유지) */
+        }
+        /* 스타일 변경 끝 */
     </style>
 </head>
 <body>
     <div id="darkModeToggle" onclick="toggleDarkMode()">다크 모드</div>
     <div id="container">
         <h1>동적 캘린더</h1>
-        
-        <label for="year">년도:</label>
-        <select id="year" onchange="updateCalendar()">
-            <!-- 여기에 년도 옵션을 동적으로 생성 -->
-        </select>
 
-        <label for "month">월:</label>
-        <select id="month" onchange="updateCalendar()">
-            <option value="0">1월</option>
-            <option value="1">2월</option>
-            <option value="2">3월</option>
-            <option value="3">4월</option>
-            <option value="4">5월</option>
-            <option value="5">6월</option>
-            <option value="6">7월</option>
-            <option value="7">8월</option>
-            <option value="8">9월</option>
-            <option value="9">10월</option>
-            <option value="10">11월</option>
-            <option value="11">12월</option>
-        </select>
+        <div class="calendar"> <!-- 수정된 부분: 중앙 정렬 적용 -->
+            <button onclick="previousMonth()">&#9665;</button>
+            <label for="year">년도:</label>
+            <select id="year" onchange="updateCalendar">
+                <!-- 여기에 년도 옵션을 동적으로 생성 -->
+            </select>
+            <label for="month">월:</label>
+            <select id="month" onchange="updateCalendar">
+                <option value="0">1월</option>
+                <option value="1">2월</option>
+                <option value="2">3월</option>
+                <option value="3">4월</option>
+                <option value="4">5월</option>
+                <option value="5">6월</option>
+                <option value="6">7월</option>
+                <option value="7">8월</option>
+                <option value="8">9월</option>
+                <option value="9">10월</option>
+                <option value="10">11월</option>
+                <option value="11">12월</option>
+            </select>
+            <button onclick="nextMonth()">&#9655;</button>
+        </div>
 
-        <div id="calendarContainer">
+        <div id="calendarContainer" class="calendar">
             <!-- 캘린더가 여기에 동적으로 생성됩니다 -->
         </div>
 
@@ -93,10 +117,29 @@
     </div>
 
     <script>
+        // 년도 옵션 생성
+        const yearSelect = document.getElementById("year");
+        const monthSelect = document.getElementById("month");
+
+        const currentDate = new Date();
+        const currentYear = currentDate.getFullYear();
+        const currentMonth = currentDate.getMonth();
+
+        yearSelect.innerHTML = ""; // 기존 옵션 제거
+        for (let i = currentYear - 10; i <= currentYear + 10; i++) {
+            const option = document.createElement("option");
+            option.value = i;
+            option.textContent = i;
+            yearSelect.appendChild(option);
+        }
+
+        yearSelect.value = currentYear; // 현재 년도 설정
+        monthSelect.value = currentMonth; // 현재 월 설정
+
         // 년도와 월을 업데이트하는 함수
         function updateCalendar() {
-            const year = parseInt(document.getElementById("year").value);
-            const month = parseInt(document.getElementById("month").value);
+            const year = parseInt(yearSelect.value);
+            const month = parseInt(monthSelect.value);
 
             const daysInMonth = new Date(year, month + 1, 0).getDate();
             const firstDay = new Date(year, month, 1).getDay();
@@ -119,6 +162,11 @@
 
             let date = 1;
 
+            const currentDate = new Date(); // 현재 날짜 정보 가져옴
+            const currentYear = currentDate.getFullYear(); // 현재 년도
+            const currentMonth = currentDate.getMonth(); // 현재 월
+            const currentDay = currentDate.getDate(); // 현재 일
+
             // 달력 일자 채우기
             for (let i = 0; i < 6; i++) {
                 const row = document.createElement("tr");
@@ -136,6 +184,24 @@
                         // 유효한 날짜
                         const td = document.createElement("td");
                         td.textContent = date;
+
+                        // 현재 날짜와 비교하여 스타일 적용
+                        if (year === currentYear && month === currentMonth && date === currentDay) {
+                            td.classList.add("today");
+                        }
+
+                        // 토요일과 일요일에 클래스를 추가하여 글자색을 변경
+                        if (j === 6) {
+                            td.classList.add("saturday");
+                        } else if (j === 0) {
+                            td.classList.add("sunday");
+                        }
+
+                        // 클릭 이벤트 추가
+                        td.addEventListener("click", () => {
+                            alert(`클릭한 날짜: ${year}년 ${month + 1}월 ${date}일`);
+                        });
+
                         row.appendChild(td);
                         date++;
                     }
@@ -147,35 +213,54 @@
             calendarContainer.appendChild(table);
         }
 
-        // 년도 옵션 생성
-        const yearSelect = document.getElementById("year");
-        const currentYear = new Date().getFullYear();
-        for (let i = currentYear - 10; i <= currentYear + 10; i++) {
-            const option = document.createElement("option");
-            option.value = i;
-            option.textContent = i;
-            yearSelect.appendChild(option);
-        }
+        // 초기 캘린더 표시
+        updateCalendar();
 
         // 다크 모드 토글 함수
         function toggleDarkMode() {
             const body = document.body;
             const darkModeToggle = document.getElementById("darkModeToggle");
-            if (body.style.backgroundColor === "white") {
+
+            if (body.style.backgroundColor === "beige" || body.style.backgroundColor === "") {
                 // 다크 모드로 변경
-                body.style.backgroundColor = "#303030"; /* 어두운 톤의 회색 배경색으로 변경 */
-                body.style.color = "white";
+                body.style.backgroundColor = "#303030"; // 어두운 회색 배경
+                body.style.color = "white"; // 흰색 글자색
                 darkModeToggle.textContent = "라이트 모드";
             } else {
                 // 라이트 모드로 변경
-                body.style.backgroundColor = "white";
+                body.style.backgroundColor = "beige";
                 body.style.color = "black";
                 darkModeToggle.textContent = "다크 모드";
             }
         }
 
-        // 초기 캘린더 표시
-        updateCalendar();
+        // 이전 달로 이동 함수
+        function previousMonth() {
+            const year = parseInt(yearSelect.value);
+            let month = parseInt(monthSelect.value);
+            month--;
+            if (month < 0) {
+                month = 11;
+                year--;
+            }
+            yearSelect.value = year;
+            monthSelect.value = month;
+            updateCalendar();
+        }
+
+        // 다음 달로 이동 함수
+        function nextMonth() {
+            const year = parseInt(yearSelect.value);
+            let month = parseInt(monthSelect.value);
+            month++;
+            if (month > 11) {
+                month = 0;
+                year++;
+            }
+            yearSelect.value = year;
+            monthSelect.value = month;
+            updateCalendar();
+        }
     </script>
 </body>
 </html>
