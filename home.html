@@ -1,63 +1,95 @@
 <!DOCTYPE html>
 <html>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>동적 캘린더</title>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: white; /* 기본 배경색 */
+            color: black; /* 기본 글자색 */
+        }
+
+        /* 다크 모드 토글 버튼 스타일 */
+        #darkModeToggle {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+        }
+
         table {
             border-collapse: collapse;
-            width: 60%;
-            float: left;
+            width: 100%;
+            margin-top: 20px;
         }
+
         table, th, td {
             border: 1px solid black;
         }
-        #imageContainer {
-            width: 30%;
-            float: left;
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+            background-color: white; /* 일 수 표시 칸의 배경색을 흰색으로 변경 */
         }
+
+        /* 일요일 스타일 */
+        th:first-child {
+            background-color: beige; /* 배경색 변경 */
+            color: #E74C3C; /* 일요일 글자색을 밝은 빨간색으로 변경 */
+        }
+
+        /* 토요일 스타일 */
+        th:last-child {
+            background-color: beige; /* 배경색 변경 */
+            color: #3498DB; /* 토요일 글자색을 밝은 파란색으로 변경 */
+        }
+
+        #imageContainer {
+            text-align: center;
+        }
+
         #imageContainer img {
             max-width: 100%;
-            max-height: 80vh;
-        }
-        #closeButton {
-            cursor: pointer;
+            max-height: 60vh;
         }
     </style>
 </head>
 <body>
-    <h1>동적 캘린더</h1>
-    
-    <label for="year">년도:</label>
-    <select id="year" onchange="updateCalendar()">
-        <!-- 여기에 년도 옵션을 동적으로 생성 -->
-    </select>
+    <div id="darkModeToggle" onclick="toggleDarkMode()">다크 모드</div>
+    <div id="container">
+        <h1>동적 캘린더</h1>
+        
+        <label for="year">년도:</label>
+        <select id="year" onchange="updateCalendar()">
+            <!-- 여기에 년도 옵션을 동적으로 생성 -->
+        </select>
 
-    <label for="month">월:</label>
-    <select id="month" onchange="updateCalendar()">
-        <option value="0">1월</option>
-        <option value="1">2월</option>
-        <option value="2">3월</option>
-        <option value="3">4월</option>
-        <option value="4">5월</option>
-        <option value="5">6월</option>
-        <option value="6">7월</option>
-        <option value="7">8월</option>
-        <option value="8">9월</option>
-        <option value="9">10월</option>
-        <option value="10">11월</option>
-        <option value="11">12월</option>
-    </select>
+        <label for "month">월:</label>
+        <select id="month" onchange="updateCalendar()">
+            <option value="0">1월</option>
+            <option value="1">2월</option>
+            <option value="2">3월</option>
+            <option value="3">4월</option>
+            <option value="4">5월</option>
+            <option value="5">6월</option>
+            <option value="6">7월</option>
+            <option value="7">8월</option>
+            <option value="8">9월</option>
+            <option value="9">10월</option>
+            <option value="10">11월</option>
+            <option value="11">12월</option>
+        </select>
 
-    <div id="calendarContainer">
-        <!-- 캘린더가 여기에 동적으로 생성됩니다 -->
-    </div>
+        <div id="calendarContainer">
+            <!-- 캘린더가 여기에 동적으로 생성됩니다 -->
+        </div>
 
-    <div id="imageContainer">
-        <img id="imageDisplay" style="display: none;">
-        <span id="closeButton" onclick="hideImage()">닫기</span>
+        <div id="imageContainer">
+            <img id="imageDisplay" style="display: none;">
+        </div>
     </div>
 
     <script>
@@ -104,7 +136,6 @@
                         // 유효한 날짜
                         const td = document.createElement("td");
                         td.textContent = date;
-                        td.onclick = () => displayImage(year, month, date);
                         row.appendChild(td);
                         date++;
                     }
@@ -126,16 +157,21 @@
             yearSelect.appendChild(option);
         }
 
-        // 이미지 표시 및 숨김
-        function displayImage(year, month, date) {
-            const imageDisplay = document.getElementById("imageDisplay");
-            imageDisplay.src = `https://i.namu.wiki/i/DuAozadMWxjzJJqK7RgktVc-ItjqNUbPCCDtDjMHhM_JVAyts8UDvrfQ7giE4GMHIOpDSK1Hx-isFe2VQ920FQ.webp`;
-            imageDisplay.style.display = "block";
-        }
-
-        function hideImage() {
-            const imageDisplay = document.getElementById("imageDisplay");
-            imageDisplay.style.display = "none";
+        // 다크 모드 토글 함수
+        function toggleDarkMode() {
+            const body = document.body;
+            const darkModeToggle = document.getElementById("darkModeToggle");
+            if (body.style.backgroundColor === "white") {
+                // 다크 모드로 변경
+                body.style.backgroundColor = "#303030"; /* 어두운 톤의 회색 배경색으로 변경 */
+                body.style.color = "white";
+                darkModeToggle.textContent = "라이트 모드";
+            } else {
+                // 라이트 모드로 변경
+                body.style.backgroundColor = "white";
+                body.style.color = "black";
+                darkModeToggle.textContent = "다크 모드";
+            }
         }
 
         // 초기 캘린더 표시
