@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>동적 캘린더</title>
+    <title>내 일정</title>
     <style>
         body {
-            font-family: 돋움, sans-serif;
+            font-family: '맑은 고딕', sans-serif;
             background-color: beige;
             color: black;
         }
@@ -16,6 +16,19 @@
             top: 10px;
             right: 10px;
             cursor: pointer;
+        }
+
+        #bannerImageContainer {
+            text-align: center;
+            background-color: lightgray;
+            padding: 10px;
+            cursor: pointer;
+            min-height: 10vh;
+        }
+
+        #bannerImageContainer img {
+            max-width: 100%;
+            max-height: 60vh;
         }
 
         table {
@@ -34,21 +47,16 @@
             text-align: center;
             background-color: #303030;
             color: white;
-            font-size: 20px; /* 폰트 크기 크게 조정 */
+            font-size: 20px;
+            border-radius: 10px;
+            cursor: pointer;
         }
 
         th {
             font-weight: bold;
-            font-size: 22px; /* 폰트 크기 크게 조정 */
-        }
-
-        #imageContainer {
-            text-align: center;
-        }
-
-        #imageContainer img {
-            max-width: 100%;
-            max-height: 60vh;
+            font-size: 22px;
+            background-color: black; /* 변경: 요일 헤더 배경색 검은색 */
+            height: 20px; /* 변경: 높이를 조절하여 살짝 줄임 */
         }
 
         .today {
@@ -57,40 +65,35 @@
 
         .calendar {
             display: block;
-            text-align: center; /* 캘린더 전체 가운데 정렬 */
-        }
-
-        /* 스타일 변경 시작 */
-        td {
-            background-color: white; /* 흰색 배경 */
-            border-radius: 10px; /* 테두리 둥근 모양 적용 */
-            cursor: pointer;
-            color: black; /* 글자색 검은색으로 변경 */
+            text-align: center;
+            background-color: darkgray; /* 변경: 캘린더 테이블의 배경색 어두운 회색 */
         }
 
         .saturday {
-            color: blue; /* 토요일 글자색 파란색으로 변경 (그대로 유지) */
+            color: blue;
         }
 
         .sunday {
-            color: red; /* 일요일 글자색 붉은색으로 변경 (그대로 유지) */
+            color: red;
         }
-        /* 스타일 변경 끝 */
     </style>
 </head>
 <body>
     <div id="darkModeToggle" onclick="toggleDarkMode()">다크 모드</div>
+    <div id="bannerImageContainer" onclick="loadBannerImage()">
+        <img id="bannerImage" style="display: none;" src="">
+    </div>
     <div id="container">
-        <h1>동적 캘린더</h1>
+        <h1 style="font-size: 2.5em; text-align: center;">내 일정</h1>
 
-        <div class="calendar"> <!-- 수정된 부분: 중앙 정렬 적용 -->
+        <div class="calendar">
             <button onclick="previousMonth()">&#9665;</button>
             <label for="year">년도:</label>
-            <select id="year" onchange="updateCalendar">
+            <select id="year" onchange="updateCalendar()">
                 <!-- 여기에 년도 옵션을 동적으로 생성 -->
             </select>
             <label for="month">월:</label>
-            <select id="month" onchange="updateCalendar">
+            <select id="month" onchange="updateCalendar()">
                 <option value="0">1월</option>
                 <option value="1">2월</option>
                 <option value="2">3월</option>
@@ -109,10 +112,6 @@
 
         <div id="calendarContainer" class="calendar">
             <!-- 캘린더가 여기에 동적으로 생성됩니다 -->
-        </div>
-
-        <div id="imageContainer">
-            <img id="imageDisplay" style="display: none;">
         </div>
     </div>
 
@@ -162,10 +161,10 @@
 
             let date = 1;
 
-            const currentDate = new Date(); // 현재 날짜 정보 가져옴
-            const currentYear = currentDate.getFullYear(); // 현재 년도
-            const currentMonth = currentDate.getMonth(); // 현재 월
-            const currentDay = currentDate.getDate(); // 현재 일
+            const currentDate = new Date();
+            const currentYear = currentDate.getFullYear();
+            const currentMonth = currentDate.getMonth();
+            const currentDay = currentDate.getDate();
 
             // 달력 일자 채우기
             for (let i = 0; i < 6; i++) {
@@ -178,26 +177,21 @@
                         row.appendChild(td);
                     } else if (date > daysInMonth) {
                         // 마지막 날짜 이후
-                        const td = document.createElement("td");
-                        row.appendChild(td);
+                        break;
                     } else {
-                        // 유효한 날짜
                         const td = document.createElement("td");
                         td.textContent = date;
 
-                        // 현재 날짜와 비교하여 스타일 적용
                         if (year === currentYear && month === currentMonth && date === currentDay) {
                             td.classList.add("today");
                         }
 
-                        // 토요일과 일요일에 클래스를 추가하여 글자색을 변경
                         if (j === 6) {
                             td.classList.add("saturday");
                         } else if (j === 0) {
                             td.classList.add("sunday");
                         }
 
-                        // 클릭 이벤트 추가
                         td.addEventListener("click", () => {
                             alert(`클릭한 날짜: ${year}년 ${month + 1}월 ${date}일`);
                         });
@@ -216,50 +210,65 @@
         // 초기 캘린더 표시
         updateCalendar();
 
-        // 다크 모드 토글 함수
         function toggleDarkMode() {
             const body = document.body;
             const darkModeToggle = document.getElementById("darkModeToggle");
 
             if (body.style.backgroundColor === "beige" || body.style.backgroundColor === "") {
-                // 다크 모드로 변경
-                body.style.backgroundColor = "#303030"; // 어두운 회색 배경
-                body.style.color = "white"; // 흰색 글자색
+                body.style.backgroundColor = "#303030";
+                body.style.color = "white";
                 darkModeToggle.textContent = "라이트 모드";
             } else {
-                // 라이트 모드로 변경
                 body.style.backgroundColor = "beige";
                 body.style.color = "black";
                 darkModeToggle.textContent = "다크 모드";
             }
         }
 
-        // 이전 달로 이동 함수
         function previousMonth() {
             const year = parseInt(yearSelect.value);
             let month = parseInt(monthSelect.value);
-            month--;
-            if (month < 0) {
-                month = 11;
-                year--;
+            if (month === 0) {
+                // If the current month is January, go back to December of the previous year.
+                yearSelect.value = year - 1;
+                monthSelect.value = 11; // December
+            } else {
+                monthSelect.value = month - 1;
             }
-            yearSelect.value = year;
-            monthSelect.value = month;
             updateCalendar();
         }
 
-        // 다음 달로 이동 함수
         function nextMonth() {
             const year = parseInt(yearSelect.value);
             let month = parseInt(monthSelect.value);
-            month++;
-            if (month > 11) {
-                month = 0;
-                year++;
+            if (month === 11) {
+                // If the current month is December, go to January of the next year.
+                yearSelect.value = year + 1;
+                monthSelect.value = 0; // January
+            } else {
+                monthSelect.value = month + 1;
             }
-            yearSelect.value = year;
-            monthSelect.value = month;
             updateCalendar();
+        }
+
+        // 이미지 로드 함수
+        function loadBannerImage() {
+            const input = document.createElement("input");
+            input.type = "file";
+            input.accept = "image/*";
+            input.onchange = function (e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = aFileReader();
+                    reader.onload = function () {
+                        const bannerImage = document.getElementById("bannerImage");
+                        bannerImage.src = reader.result;
+                        bannerImage.style.display = "block";
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+            input.click();
         }
     </script>
 </body>
