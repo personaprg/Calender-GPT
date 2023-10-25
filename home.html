@@ -5,6 +5,82 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>동적 캘린더</title>
+    <style>
+        body {
+            font-family: 돋움, sans-serif;
+            background-color: beige;
+            color: black;
+        }
+
+        #darkModeToggle {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+            border-radius: 10px;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: center;
+            background-color: #303030;
+            color: white;
+            font-size: 20px; /* 폰트 크기 크게 조정 */
+        }
+
+        th {
+            font-weight: bold;
+            font-size: 22px; /* 폰트 크기 크게 조정 */
+        }
+
+        #imageContainer {
+            text-align: center;
+        }
+
+        #imageContainer img {
+            max-width: 100%;
+            max-height: 60vh;
+        }
+
+        .today {
+            background-color: lightcoral;
+        }
+
+        .calendar {
+            display: block;
+            text-align: center; /* 캘린더 전체 가운데 정렬 */
+        }
+
+        /* 스타일 변경 시작 */
+        td {
+            background-color: white; /* 흰색 배경 */
+            border-radius: 10px; /* 테두리 둥근 모양 적용 */
+            cursor: pointer;
+            color: black; /* 글자색 검은색으로 변경 */
+        }
+
+        .saturday {
+            color: blue; /* 토요일 글자색 파란색으로 변경 (그대로 유지) */
+        }
+
+        .sunday {
+            color: red; /* 일요일 글자색 붉은색으로 변경 (그대로 유지) */
+        }
+        /* 스타일 변경 끝 */
+    </style>
   <title>동적 캘린더</title>
   <style>
     table {
@@ -36,43 +112,43 @@
 </head>
 
 <body>
-  <h1>동적 캘린더</h1>
+    <h1>동적 캘린더</h1>
+    
+    <label for="year">년도:</label>
+    <select id="year" onchange="updateCalendar()">
+        <!-- 여기에 년도 옵션을 동적으로 생성 -->
+    </select>
 
-  <label for="year">년도:</label>
-  <select id="year" onchange="updateCalendar()">
-    <!-- 여기에 년도 옵션을 동적으로 생성 -->
-  </select>
+    <label for="month">월:</label>
+    <select id="month" onchange="updateCalendar()">
+        <option value="0">1월</option>
+        <option value="1">2월</option>
+        <option value="2">3월</option>
+        <option value="3">4월</option>
+        <option value="4">5월</option>
+        <option value="5">6월</option>
+        <option value="6">7월</option>
+        <option value="7">8월</option>
+        <option value="8">9월</option>
+        <option value="9">10월</option>
+        <option value="10">11월</option>
+        <option value="11">12월</option>
+    </select>
 
-  <label for="month">월:</label>
-  <select id="month" onchange="updateCalendar()">
-    <option value="0">1월</option>
-    <option value="1">2월</option>
-    <option value="2">3월</option>
-    <option value="3">4월</option>
-    <option value="4">5월</option>
-    <option value="5">6월</option>
-    <option value="6">7월</option>
-    <option value="7">8월</option>
-    <option value="8">9월</option>
-    <option value="9">10월</option>
-    <option value="10">11월</option>
-    <option value="11">12월</option>
-  </select>
+    <div id="calendarContainer">
+        <!-- 캘린더가 여기에 동적으로 생성됩니다 -->
+    </div>
 
-  <div id="calendarContainer">
-    <!-- 캘린더가 여기에 동적으로 생성됩니다 -->
-  </div>
+    <div id="imageContainer">
+        <img id="imageDisplay" style="display: none;">
+        <span id="closeButton" onclick="hideImage()">닫기</span>
+    </div>
 
-  <div id="imageContainer">
-    <img id="imageDisplay" style="display: none;">
-    <span id="closeButton" onclick="hideImage()">닫기</span>
-  </div>
-
-  <script>
-    // 년도와 월을 업데이트하는 함수
-    function updateCalendar() {
-      const year = parseInt(document.getElementById("year").value);
-      const month = parseInt(document.getElementById("month").value);
+    <script>
+        // 년도와 월을 업데이트하는 함수
+        function updateCalendar() {
+            const year = parseInt(document.getElementById("year").value);
+            const month = parseInt(document.getElementById("month").value);
 
       const daysInMonth = new Date(year, month + 1, 0).getDate();
       const firstDay = new Date(year, month, 1).getDay();
@@ -93,30 +169,30 @@
 
       table.appendChild(headerRow);
 
-      let date = 1;
+            let date = 1;
 
       // 달력 일자 채우기
       for (let i = 0; i < 6; i++) {
         const row = document.createElement("tr");
 
-        for (let j = 0; j < 7; j++) {
-          if (i === 0 && j < firstDay) {
-            // 첫 번째 주의 시작 이전
-            const td = document.createElement("td");
-            row.appendChild(td);
-          } else if (date > daysInMonth) {
-            // 마지막 날짜 이후
-            const td = document.createElement("td");
-            row.appendChild(td);
-          } else {
-            // 유효한 날짜
-            const td = document.createElement("td");
-            td.textContent = date;
-            td.onclick = () => displayImage(year, month, date);
-            row.appendChild(td);
-            date++;
-          }
-        }
+                for (let j = 0; j < 7; j++) {
+                    if (i === 0 && j < firstDay) {
+                        // 첫 번째 주의 시작 이전
+                        const td = document.createElement("td");
+                        row.appendChild(td);
+                    } else if (date > daysInMonth) {
+                        // 마지막 날짜 이후
+                        const td = document.createElement("td");
+                        row.appendChild(td);
+                    } else {
+                        // 유효한 날짜
+                        const td = document.createElement("td");
+                        td.textContent = date;
+                        td.onclick = () => displayImage(year, month, date);
+                        row.appendChild(td);
+                        date++;
+                    }
+                }
 
         table.appendChild(row);
       }
@@ -124,31 +200,31 @@
       calendarContainer.appendChild(table);
     }
 
-    // 년도 옵션 생성
-    const yearSelect = document.getElementById("year");
-    const currentYear = new Date().getFullYear();
-    for (let i = currentYear - 10; i <= currentYear + 10; i++) {
-      const option = document.createElement("option");
-      option.value = i;
-      option.textContent = i;
-      yearSelect.appendChild(option);
-    }
+        // 년도 옵션 생성
+        const yearSelect = document.getElementById("year");
+        const currentYear = new Date().getFullYear();
+        for (let i = currentYear - 10; i <= currentYear + 10; i++) {
+            const option = document.createElement("option");
+            option.value = i;
+            option.textContent = i;
+            yearSelect.appendChild(option);
+        }
 
-    // 이미지 표시 및 숨김
-    function displayImage(year, month, date) {
-      const imageDisplay = document.getElementById("imageDisplay");
-      imageDisplay.src = `your_image_path/${year}-${month + 1}-${date}.jpg`;
-      imageDisplay.style.display = "block";
-    }
+        // 이미지 표시 및 숨김
+        function displayImage(year, month, date) {
+            const imageDisplay = document.getElementById("imageDisplay");
+            imageDisplay.src = `your_image_path/${year}-${month + 1}-${date}.jpg`;
+            imageDisplay.style.display = "block";
+        }
 
-    function hideImage() {
-      const imageDisplay = document.getElementById("imageDisplay");
-      imageDisplay.style.display = "none";
-    }
+        function hideImage() {
+            const imageDisplay = document.getElementById("imageDisplay");
+            imageDisplay.style.display = "none";
+        }
 
-    // 초기 캘린더 표시
-    updateCalendar();
-  </script>
+        // 초기 캘린더 표시
+        updateCalendar();
+    </script>
 </body>
 
 </html>
