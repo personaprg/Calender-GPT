@@ -3,27 +3,41 @@ const fs = require('fs');
 const path = require('path');
 
 const server = http.createServer((req, res) => {
-  if (req.method === 'GET' && req.url === '/') {
-    // 요청이 GET이며 URL이 '/home.html'일 때,
-    const filePath = path.join(__dirname, 'home.html');
-
-    fs.readFile(filePath, 'utf8', (err, data) => {
-      if (err) {
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.end('Internal Server Error');
-      } else {
-        res.writeHead(200, { 'Content-Type': 'text/html' });
-        res.end(data);
-      }
-    });
+  if (req.method === 'GET') {
+    if (req.url === '/') {
+      // 루트 경로의 요청일 때, home.html 파일을 제공
+      serveFile('home.html', 'text/html', res);
+    } else if (req.url === '/style.css') {
+      // style.css 파일을 제공
+      serveFile('html-module/style.css', 'text/css', res);
+    } else if (req.url === '/script.js') {
+      // script.js 파일을 제공
+      serveFile('html-module/script.js', 'application/javascript', res);
+    } else {
+      res.writeHead(404, { 'Content-Type': 'text/plain' });
+      res.end('Not Found');
+    }
   } else {
-    // 다른 요청에 대한 응답 처리
-    res.writeHead(404, { 'Content-Type': 'text/plain' });
-    res.end('Not Found');
+    res.writeHead(405, { 'Content-Type': 'text/plain' });
+    res.end('Method Not Allowed');
   }
 });
 
-const port = 8080; // 사용할 포트 번호를 선택하세요.
+const port = 8080;
 server.listen(port, () => {
   console.log(`서버가 ${port}번 포트에서 실행 중입니다.`);
 });
+
+function serveFile(filename, contentType, response) {
+  const filePath = path.join(__dirname, filename);
+  fs.readFile(filePath, 'utf8', (err, data) => {
+    if (err) {
+      console.error('파일 읽기 오류:', err);
+      response.writeHead(500, { 'Content-Type': 'text/plain' });
+      response.end('Internal Server Error');
+    } else {
+      response.writeHead(200, { 'Content-Type': contentType });
+      response.end(data);
+    }
+  });
+}
