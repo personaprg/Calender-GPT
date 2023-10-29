@@ -1,5 +1,9 @@
 <!DOCTYPE html>
 <html>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -77,24 +81,23 @@
         .sunday {
             color: red;
         }
+        /* 스타일 변경 끝 */
     </style>
 </head>
+
 <body>
     <div id="darkModeToggle" onclick="toggleDarkMode()">다크 모드</div>
-    <div id="bannerImageContainer" onclick="loadBannerImage()">
-        <img id="bannerImage" style="display: none;" src="">
-    </div>
     <div id="container">
-        <h1 style="font-size: 2.5em; text-align: center;">내 일정</h1>
+        <h1>동적 캘린더</h1>
 
-        <div class="calendar">
+        <div class="calendar"> <!-- 수정된 부분: 중앙 정렬 적용 -->
             <button onclick="previousMonth()">&#9665;</button>
             <label for="year">년도:</label>
-            <select id="year" onchange="updateCalendar()">
+            <select id="year" onchange="updateCalendar">
                 <!-- 여기에 년도 옵션을 동적으로 생성 -->
             </select>
             <label for="month">월:</label>
-            <select id="month" onchange="updateCalendar()">
+            <select id="month" onchange="updateCalendar">
                 <option value="0">1월</option>
                 <option value="1">2월</option>
                 <option value="2">3월</option>
@@ -114,58 +117,43 @@
         <div id="calendarContainer" class="calendar">
             <!-- 캘린더가 여기에 동적으로 생성됩니다 -->
         </div>
+
+        <div id="imageContainer">
+            <img id="imageDisplay" style="display: none;">
+        </div>
     </div>
 
     <script>
-        // 년도 옵션 생성
-        const yearSelect = document.getElementById("year");
-        const monthSelect = document.getElementById("month");
-
-        const currentDate = new Date();
-        const currentYear = currentDate.getFullYear();
-        const currentMonth = currentDate.getMonth();
-
-        yearSelect.innerHTML = ""; // 기존 옵션 제거
-        for (let i = currentYear - 10; i <= currentYear + 10; i++) {
-            const option = document.createElement("option");
-            option.value = i;
-            option.textContent = i;
-            yearSelect.appendChild(option);
-        }
-
-        yearSelect.value = currentYear; // 현재 년도 설정
-        monthSelect.value = currentMonth; // 현재 월 설정
-
         // 년도와 월을 업데이트하는 함수
         function updateCalendar() {
-            const year = parseInt(yearSelect.value);
-            const month = parseInt(monthSelect.value);
+            const year = parseInt(document.getElementById("year").value);
+            const month = parseInt(document.getElementById("month").value);
 
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-            const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const firstDay = new Date(year, month, 1).getDay();
 
-            const calendarContainer = document.getElementById("calendarContainer");
-            calendarContainer.innerHTML = "";
+      const calendarContainer = document.getElementById("calendarContainer");
+      calendarContainer.innerHTML = "";
 
-            const table = document.createElement("table");
-            const headerRow = document.createElement("tr");
+      const table = document.createElement("table");
+      const headerRow = document.createElement("tr");
 
-            // 요일 헤더 생성
-            const daysOfWeek = ["일", "월", "화", "수", "목", "금", "토"];
-            daysOfWeek.forEach(day => {
-                const th = document.createElement("th");
-                th.textContent = day;
-                headerRow.appendChild(th);
-            });
+      // 요일 헤더 생성
+      const daysOfWeek = ["일", "월", "화", "수", "목", "금", "토"];
+      daysOfWeek.forEach(day => {
+        const th = document.createElement("th");
+        th.textContent = day;
+        headerRow.appendChild(th);
+      });
 
-            table.appendChild(headerRow);
+      table.appendChild(headerRow);
 
             let date = 1;
 
-            const currentDate = new Date();
-            const currentYear = currentDate.getFullYear();
-            const currentMonth = currentDate.getMonth();
-            const currentDay = currentDate.getDate();
+            const currentDate = new Date(); // 현재 날짜 정보 가져옴
+            const currentYear = currentDate.getFullYear(); // 현재 년도
+            const currentMonth = currentDate.getMonth(); // 현재 월
+            const currentDay = currentDate.getDate(); // 현재 일
 
             // 달력 일자 채우기
             for (let i = 0; i < 6; i++) {
@@ -183,16 +171,19 @@
                         const td = document.createElement("td");
                         td.textContent = date;
 
+                        // 현재 날짜와 비교하여 스타일 적용
                         if (year === currentYear && month === currentMonth && date === currentDay) {
                             td.classList.add("today");
                         }
 
+                        // 토요일과 일요일에 클래스를 추가하여 글자색을 변경
                         if (j === 6) {
                             td.classList.add("saturday");
                         } else if (j === 0) {
                             td.classList.add("sunday");
                         }
 
+                        // 클릭 이벤트 추가
                         td.addEventListener("click", () => {
                             alert(`클릭한 날짜: ${year}년 ${month + 1}월 ${date}일`);
                         });
@@ -202,76 +193,61 @@
                     }
                 }
 
-                table.appendChild(row);
-            }
+        table.appendChild(row);
+      }
 
-            calendarContainer.appendChild(table);
-        }
+      calendarContainer.appendChild(table);
+    }
 
         // 초기 캘린더 표시
         updateCalendar();
 
+        // 다크 모드 토글 함수
         function toggleDarkMode() {
             const body = document.body;
             const darkModeToggle = document.getElementById("darkModeToggle");
 
             if (body.style.backgroundColor === "beige" || body.style.backgroundColor === "") {
-                body.style.backgroundColor = "#303030";
-                body.style.color = "white";
+                // 다크 모드로 변경
+                body.style.backgroundColor = "#303030"; // 어두운 회색 배경
+                body.style.color = "white"; // 흰색 글자색
                 darkModeToggle.textContent = "라이트 모드";
             } else {
+                // 라이트 모드로 변경
                 body.style.backgroundColor = "beige";
                 body.style.color = "black";
                 darkModeToggle.textContent = "다크 모드";
             }
         }
-        
 
+        // 이전 달로 이동 함수
         function previousMonth() {
             const year = parseInt(yearSelect.value);
             let month = parseInt(monthSelect.value);
-            if (month === 0) {
-                // If the current month is January, go back to December of the previous year.
-                yearSelect.value = year - 1;
-                monthSelect.value = 11; // December
-            } else {
-                monthSelect.value = month - 1;
+            month--;
+            if (month < 0) {
+                month = 11;
+                year--;
             }
+            yearSelect.value = year;
+            monthSelect.value = month;
             updateCalendar();
         }
 
+        // 다음 달로 이동 함수
         function nextMonth() {
             const year = parseInt(yearSelect.value);
             let month = parseInt(monthSelect.value);
-            if (month === 11) {
-                // If the current month is December, go to January of the next year.
-                yearSelect.value = year + 1;
-                monthSelect.value = 0; // January
-            } else {
-                monthSelect.value = month + 1;
+            month++;
+            if (month > 11) {
+                month = 0;
+                year++;
             }
+            yearSelect.value = year;
+            monthSelect.value = month;
             updateCalendar();
-        }
-
-        // 이미지 로드 함수
-        function loadBannerImage() {
-            const input = document.createElement("input");
-            input.type = "file";
-            input.accept = "image/*";
-            input.onchange = function (e) {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = aFileReader();
-                    reader.onload = function () {
-                        const bannerImage = document.getElementById("bannerImage");
-                        bannerImage.src = reader.result;
-                        bannerImage.style.display = "block";
-                    };
-                    reader.readAsDataURL(file);
-                }
-            };
-            input.click();
         }
     </script>
 </body>
+
 </html>
